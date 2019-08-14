@@ -1,0 +1,48 @@
+name: tipbot-website
+version: 0.1.0
+
+authors:
+  - Jonathan B. <greenbigfrog@gmail.com>
+
+targets:
+  tipbot-website:
+    main: src/tipbot-website.cr
+
+crystal: 0.30.1
+
+license: MIT
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+    branch: master
+  kemal-csrf:
+    github: rndtrash/kemal-csrf
+    # version: ~> 0.5.0
+    branch: master
+  kemal-session:
+    github: kemalcr/kemal-session
+    version: ~> 0.11.0
+  kemal-session-redis:
+    github: greenbigfrog/kemal-session-redis
+    # branch: master
+    commit: 13e7f2a49611562f9fc0bc37bf2f11f58d9be779
+
+  twitcr:
+    github: greenbigfrog/twitcr
+    branch: master
+
+  crometheus:
+    gitlab: bigforcegun/crometheus
+    branch: master
+  tb:
+    github: greenbigfrog/tipbot-common
+    branch: master
+  tb-worker:
+    github: greenbigfrog/tipbot-worker
+    branch: master
+
+
+development_dependencies:
+  ameba:
+    github: veelenga/ameba

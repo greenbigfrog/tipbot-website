@@ -1,0 +1,86 @@
+version: 1.0
+shards:
+  ameba:
+    github: veelenga/ameba
+    version: 0.10.0
+
+  any_hash:
+    github: sija/any_hash.cr
+    commit: 1907068cdbfc3ef9759954194472b82f9f19c6e4
+
+  bitcoin_rpc:
+    github: citizen428/bitcoin_rpc
+    version: 0.4.1
+
+  crometheus:
+    gitlab: bigforcegun/crometheus
+    commit: 42bec4e2d2ab92d2b3d2dc21ec443aaa9feb7555
+
+  db:
+    github: crystal-lang/crystal-db
+    version: 0.5.1
+
+  discordcr:
+    github: greenbigfrog/discordcr
+    commit: ce3a13c28e76976965d9bbaae88a02131da2b55f
+
+  exception_page:
+    github: crystal-loot/exception_page
+    version: 0.1.2
+
+  kemal:
+    github: kemalcr/kemal
+    commit: 15022c25b824ecbfe465862bfa8a8e37a4b6ab40
+
+  kemal-csrf:
+    github: rndtrash/kemal-csrf
+    commit: d20ee97d69dfe345b3436c4f3bbe7e5317f989fd
+
+  kemal-session:
+    github: kemalcr/kemal-session
+    version: 0.11.1
+
+  kemal-session-redis:
+    github: greenbigfrog/kemal-session-redis
+    commit: 13e7f2a49611562f9fc0bc37bf2f11f58d9be779
+
+  kilt:
+    github: jeromegn/kilt
+    version: 0.4.0
+
+  mosquito:
+    github: robacarp/mosquito
+    version: 0.5.0
+
+  pg:
+    github: greenbigfrog/crystal-pg
+    commit: e12b2557682e7cbe18206c1e00a30cd83db19db7
+
+  pool:
+    github: ysbaddaden/pool
+    version: 0.2.3
+
+  radix:
+    github: luislavena/radix
+    version: 0.3.9
+
+  raven:
+    github: sija/raven.cr
+    version: 1.5.0
+
+  redis:
+    github: stefanwille/crystal-redis
+    version: 2.1.1
+
+  tb:
+    github: greenbigfrog/tipbot-common
+    commit: 2835f37874fab7f4b67ebaef13ea860c26bcf9d2
+
+  tb-worker:
+    github: greenbigfrog/tipbot-worker
+    commit: a2af010d18b9d977236a88b0f5f1e043efc27a09
+
+  twitcr:
+    github: greenbigfrog/twitcr
+    commit: e611e739d7177fbe5ee404e8b77e00bb584721cc
+
