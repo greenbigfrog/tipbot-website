@@ -9,8 +9,10 @@ require "tb-worker"
 
 require "crometheus"
 
-# TODO solve version conflict for
-add_handler CSRF.new
+add_handler CSRF.new(
+  allowed_routes: ["/api/generate_deposit_address"],
+  error: "CSRF Error"
+)
 
 add_handler AuthHandler.new
 
