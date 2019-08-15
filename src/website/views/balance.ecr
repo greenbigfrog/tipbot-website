@@ -3,9 +3,14 @@
 	<title>Balance</title>
 	<p>
 		<% coins = TB::Data::Coin.read_all %>
-		<% TB::Data::Account.read(user).balances.each do |bal| %>
-			<% coin = coins[bal.coin] %>
-			<%= "#{coin.name_long}: #{bal.balance} #{coin.name_short}" %>
+		<% balances = TB::Data::Account.read(user).balances %>
+		<% if balances.empty? %>
+			You do not have any balances to display here. You can <a href="/deposit">Deposit</a> though.
+		<% else %>
+			<% balances.each do |bal| %>
+				<% coin = coins[bal.coin] %>
+				<%= "#{coin.name_long}: #{bal.balance} #{coin.name_short}" %>
+			<% end %>
 		<% end %>
 	</p>
 </body>
