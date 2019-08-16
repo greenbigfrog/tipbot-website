@@ -195,7 +195,15 @@ class Website
 
       coin = TB::Data::Coin.read(env.params.query["coin"].to_i32)
 
-      TB::Data::DepositAddress.read_or_create(coin, TB::Data::Account.read(user))
+      begin
+        TB::Data::DepositAddress.read_or_create(coin, TB::Data::Account.read(user))
+      rescue ex
+        if ex.message == "Unable to connect to RPC"
+          halt env, 503, "Please try again later. Unable to connect to RPC"
+        else
+          halt env, 500, "Something went wrong. Please visit #{TB::SUPPORT} for support"
+        end
+      end
 
       env.redirect("/deposit")
     end
