@@ -3,12 +3,17 @@
 	padding: 0;
 }
 
+
+html {
+	height: 100%;
+}
+
 body {
 	display: grid;
 	grid-template-rows: [header-start] 1fr [header-end content-start] 10fr [content-end footer-start] 1fr [footer-end];
 	grid-template-columns: [full-start] 1fr [content-start] 10fr [content-end] 1fr [full-end];
 
-	min-height: 100vh;
+	min-height: 100%;
 }
 
 .content {
@@ -21,6 +26,7 @@ body {
 	grid-column: full;
 
 	padding: 5px;
+	margin-bottom: 5px;
 
 	display: flex;
 	justify-content: space-between;
