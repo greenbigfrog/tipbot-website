@@ -7,6 +7,8 @@ body {
 	display: grid;
 	grid-template-rows: [header-start] 1fr [header-end content-start] 10fr [content-end footer-start] 1fr [footer-end];
 	grid-template-columns: [full-start] 1fr [content-start] 10fr [content-end] 1fr [full-end];
+
+	min-height: 100vh;
 }
 
 .content {
@@ -14,13 +16,58 @@ body {
 }
 
 .header {
+	background-color: #845ec2;
 	grid-row: header;
 	grid-column: full;
 
+	padding: 5px;
+
+	display: flex;
+	justify-content: space-between;
+}
+
+.header .menu {
 	display: flex;
 }
 
 .footer {
+	background-color: #fbeaff;
 	grid-row: footer;
 	grid-column: full;
+}
+
+.sth {
+	background-color: #b39cd0;
+}
+
+.notif {
+	background-color:  #00c9a7;
+}
+
+.header a {
+	-moz-box-shadow: 1px 1px 0px 0px #29574f;
+	-webkit-box-shadow: 1px 1px 0px 0px #29574f;
+	box-shadow: 1px 1px 0px 0px #29574f;
+	background-color:#00c9a8;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	border:2px solid #00c9a8;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Georgia;
+	font-size:16px;
+	font-weight:bold;
+	padding:3px 5px;
+	text-decoration:none;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.header a:hover {
+	background-color:#04B094;
+}
+.header a:active {
+	position:relative;
+	top:1px;
 }

@@ -1,20 +1,31 @@
 <html>
-<head>
-	<link rel="stylesheet" href="/css/default.css">
-</head>
-<body>
-	<div class="header">
-		<% if env.session.bigint?("user_id") %>
-		<a href="/logout">Logout</a>
-		<% else %>
-		<a href="/login">Login</a>
-		<% end %>
-	</div>
-	<div class="content">
-		<%= content %>
-	</div>
-	<div class="footer">
-		someting
-		<a href="/terms">ToS</a>
-	</div>
-</body>
+	<head>
+		<link rel="stylesheet" href="/css/default.css">
+	</head>
+	<body>
+		<div class="header">
+			<div class= "home">
+				<a href="/">Home</a>
+			</div>
+			<div class="menu">
+				<a href="/statistics">Statistics</a>
+				<a href="/balance">Balance</a>
+				<a href="/deposit">Deposit</a>
+			</div>
+			<div class="login">
+				<% if env.session.bigint?("user_id") %>
+				<a href="/logout">Logout</a>
+				<% else %>
+				<a href="/login">Login</a>
+				<% end %>
+			</div>
+		</div>
+		<div class="content">
+			<%= content %>
+		</div>
+		<div class="footer">
+			something
+			<a href="/terms">ToS</a>
+		</div>
+	</body>
+</html>
