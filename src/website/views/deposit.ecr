@@ -1,21 +1,30 @@
 <html>
-<body>
-	<title>Deposit</title>
-	<p>
+	<style>
+		.deposit_address {
+			padding: 2px;
+
+			user-select: all;
+			-webkit-user-select: all;
+
+			background-color: #DCDCDC;
+			border-radius: 3px;
+			color: black;
+		}
+	</style>
+	<body>
+		<title>Deposit</title>
 		<% tmp_coin_list = TB::Data::Coin.read_all %>
 		<% TB::Data::DepositAddress.read_all_active_for_account(user.to_i32).each do |deposit| %>
-			<%= "#{tmp_coin_list[deposit.coin].name_long}: #{deposit.address}" %>
-			<small><%="Generated at #{deposit.created_time}" %></small>
+			<% name = tmp_coin_list[deposit.coin].name_long %>
+			<%= name %>: <text class="deposit_address"><%= deposit.address %></text>
+			<% # "Generated at #{deposit.created_time}" %>
 			<% tmp_coin_list.delete(deposit.coin) %>
-			<br>
 		<% end %>
 		<% tmp_coin_list.each_value do |coin| %>
-			<form method="post" action="/api/generate_deposit_address?coin=<%= coin.id%>">
-				<%= "#{coin.name_long}: " %>
-				<button type="submit">Generate Deposit Address</button>
-			</form>
-			<br>
+		<form method="post" action="/api/generate_deposit_address?coin=<%= coin.id%>">
+			<%= "#{coin.name_long}: " %>
+			<button type="submit">Generate Deposit Address</button>
+		</form>
 		<% end %>
-	</p>
-</body>
+	</body>
 </html>
