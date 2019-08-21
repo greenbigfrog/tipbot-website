@@ -37,6 +37,9 @@ STDOUT.sync = true
 
 class Website
   def self.run
+    # Check for potential missed deposits during downtime
+    queue_history_deposits_check
+
     redirect_uri = "http://127.0.0.1:3000/auth/callback/"
 
     discord_auth = DiscordOAuth2.new(ENV["DISCORD_CLIENT_ID"], ENV["DISCORD_CLIENT_SECRET"], redirect_uri + "discord")
@@ -209,5 +212,9 @@ class Website
     end
 
     Kemal.run
+  end
+
+  private def self.queue_history_deposits_check
+    TB::Worker::HistoryDeposits.new.enqueue
   end
 end
