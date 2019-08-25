@@ -13,5 +13,9 @@
 			<% end %>
 		<% end %>
 	</p>
+	<% if msgs = coins.values.map {|coin| coin.balance_broadcast } %>
+	<%= "Pay attention to these messages:" %>
+	<%= msgs.join("\n") %>
+	<% end %>
 </body>
 </html>
