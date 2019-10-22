@@ -49,6 +49,10 @@ class Website
       default_render("index.ecr")
     end
 
+    get "/terms" do |env|
+      default_render("terms.ecr")
+    end
+
     get "/balance" do |env|
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
