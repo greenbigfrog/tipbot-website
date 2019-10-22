@@ -125,7 +125,10 @@ class Website
 
       env.session.bigint("user_id", user_id)
 
-      env.redirect(env.session.string?("origin") || "/")
+      origin = env.session.string?("origin")
+      env.session.string("origin", "")
+
+      env.redirect(origin || "/")
     end
 
     get "/logout" do |env|
