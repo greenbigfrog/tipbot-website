@@ -10,6 +10,23 @@
 			border-radius: 3px;
 			color: black;
 		}
+
+		.info {
+			display: inline;
+		}
+
+		.info text {
+			display: none;
+
+			background-color: #ffe4fd;
+			padding: 2px;
+			margin: 2px;
+			border-radius: 2px;
+		}
+
+		.info button:hover + text {
+			display: inline;
+		}
 	</style>
 	<body>
 		<title>Deposit</title>
@@ -17,7 +34,10 @@
 		<% TB::Data::DepositAddress.read_all_active_for_account(user.to_i32).each do |deposit| %>
 			<% name = tmp_coin_list[deposit.coin].name_long %>
 			<%= name %>: <text class="deposit_address"><%= deposit.address %></text>
-			<% # "Generated at #{deposit.created_time}" %>
+			<div class="info">
+				<button><i class="fas fa-info"></i></button>
+				<text> Generated at <%= deposit.created_time %></text>
+			</div>
 			<% tmp_coin_list.delete(deposit.coin) %>
 		<% end %>
 		<% tmp_coin_list.each_value do |coin| %>
