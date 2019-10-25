@@ -43,6 +43,7 @@
 		<% tmp_coin_list.each_value do |coin| %>
 		<form method="post" action="/api/generate_deposit_address?coin=<%= coin.id%>">
 			<%= "#{coin.name_long}: " %>
+			<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
 			<button type="submit">Generate Deposit Address</button>
 		</form>
 		<% end %>

@@ -11,11 +11,7 @@ require "tb-worker"
 
 require "crometheus"
 
-add_handler CSRF.new(
-  allowed_routes: ["/api/generate_deposit_address"],
-  error: "CSRF Error"
-)
-
+add_handler CSRF.new
 add_handler AuthHandler.new
 
 # Prometheus
