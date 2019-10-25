@@ -4,6 +4,8 @@ require "kemal-session"
 require "oauth2"
 require "kemal-session-redis"
 
+require "raven/integrations/kemal"
+
 require "tb"
 require "tb-worker"
 
@@ -22,6 +24,16 @@ Crometheus.default_registry.path = "/metrics"
 
 add_handler metrics_handler
 add_handler Crometheus::Middleware::HttpCollector.new
+
+# Raven
+Raven.configure do |config|
+  config.async = true
+  config.current_environment = Kemal.config.env
+end
+
+Kemal.config.logger = Raven::Kemal::LogHandler.new(Kemal::LogHandler.new)
+
+add_handler Raven::Kemal::ExceptionHandler.new
 
 Kemal::Session.config do |config|
   config.secret = ENV["SECRET"]
