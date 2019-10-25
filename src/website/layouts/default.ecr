@@ -12,9 +12,11 @@
 				<a href="/statistics">Statistics</a>
 				<a href="/balance">Balance</a>
 				<a href="/deposit">Deposit</a>
+				<a href="/configuration">Config</a>
 			</div>
 			<div class="login">
 				<% if env.session.bigint?("user_id") %>
+				<a href="/link_accounts">Link Accounts</a>
 				<a href="/logout">Logout</a>
 				<% else %>
 				<a href="/login">Login</a>

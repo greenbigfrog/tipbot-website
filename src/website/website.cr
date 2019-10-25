@@ -48,6 +48,8 @@ class Website
     # Check for potential missed deposits during downtime
     queue_history_deposits_check
 
+    redis = Redis.new(url: ENV["REDIS_URL"]?)
+
     redirect_uri = "http://127.0.0.1:3000/auth/callback/"
 
     discord_auth = DiscordOAuth2.new(ENV["DISCORD_CLIENT_ID"], ENV["DISCORD_CLIENT_SECRET"], redirect_uri + "discord")
@@ -83,6 +85,12 @@ class Website
       default_render("link_accounts.ecr")
     end
 
+    get "/configuration" do |env|
+      user = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless user.is_a?(Int64)
+      default_render("configuration.ecr")
+    end
+
     get "/admin" do |env|
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
@@ -115,9 +123,15 @@ class Website
 
     get "/auth/:platform" do |env|
       case env.params.url["platform"]
-      when "discord" then env.redirect(discord_auth.authorize_uri("identify"))
-      when "twitch"  then env.redirect(twitch_auth.authorize_uri(""))
-      else                halt env, status_code: 400
+      when "discord"
+        scope = "identify"
+        if env.params.query["scope"]? == "guilds"
+          scope = "guilds"
+          env.session.bool("store_admin_guilds", true)
+        end
+        env.redirect(discord_auth.authorize_uri(scope))
+      when "twitch" then env.redirect(twitch_auth.authorize_uri(""))
+      else               halt env, status_code: 400
       end
     end
 
@@ -128,17 +142,28 @@ class Website
         env.session.bigint("twitch", user)
         user_id = TB::Data::Account.read(:twitch, user).id.to_i64
       when "discord"
-        user = discord_auth.get_user_id_with_authorization_code(env.params.query)
+        if env.session.bool?("store_admin_guilds")
+          access_token = discord_auth.get_access_token(env.params.query, "guilds")
+          guilds = discord_auth.get_user_admin_guilds(access_token)
+        else
+          access_token = discord_auth.get_access_token(env.params.query)
+        end
+
+        user = discord_auth.get_user_id(access_token)
         env.session.bigint("discord", user)
+
         user_id = TB::Data::Account.read(:discord, user).id.to_i64
       else
         halt env, status_code: 400
       end
 
       env.session.bigint("user_id", user_id)
+      if guilds
+        redis.set("admin_guilds-#{user_id}", guilds.to_json)
+      end
 
       origin = env.session.string?("origin")
-      env.session.string("origin", "")
+      env.session.string("origin", "/")
 
       env.redirect(origin || "/")
     end
@@ -226,10 +251,56 @@ class Website
       env.redirect("/deposit")
     end
 
+    {"prefix", "mention", "soak", "rain", "min_soak",
+     "min_soak_total", "min_rain", "min_rain_total",
+     "min_tip", "min_lucky"}
+
+    post "/api/guild_config" do |env|
+      user = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless user.is_a?(Int64)
+
+      params = env.params.body
+      config_id = params["config_id"].to_i64
+
+      guild = TB::Data::Discord::Guild.read_guild_id(config_id)
+
+      guilds = Array(DiscordGuild).from_json(redis.get("admin_guilds-#{user}").not_nil!)
+      halt env, status_code: 403 unless guilds.any? { |x| x.id == guild }
+
+      prefix = params["prefix"]? # leave string
+
+      mention = params["mention"]? ? true : false
+      soak = params["soak"]? ? true : false
+      rain = params["rain"]? ? true : false
+
+      min_soak = parse_bd(params["min_soak"]?)
+      min_soak_total = parse_bd(params["min_soak_total"]?)
+      min_rain = parse_bd(params["min_rain"]?)
+      min_rain_total = parse_bd(params["min_rain_total"]?)
+      min_tip = parse_bd(params["min_tip"]?)
+      min_lucky = parse_bd(params["min_lucky"]?)
+
+      TB::Data::Discord::Guild.update_config(config_id, prefix, mention, soak, rain,
+        min_soak, min_soak_total, min_rain, min_rain_total,
+        min_tip, min_lucky)
+
+      env.session.bool("saved_guild_config", true)
+      env.redirect("/configuration")
+    end
+
     Kemal.run
   end
 
   private def self.queue_history_deposits_check
     TB::Worker::HistoryDeposits.new.enqueue
+  end
+
+  private def self.parse_bd(string : String?) : BigDecimal?
+    return nil if string.nil?
+    begin
+      BigDecimal.new(string)
+    rescue
+      nil
+    end
   end
 end

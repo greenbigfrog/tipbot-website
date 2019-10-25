@@ -10,7 +10,7 @@ shards:
 
   bitcoin_rpc:
     github: citizen428/bitcoin_rpc
-    version: 0.4.1
+    version: 5.0.0
 
   crometheus:
     gitlab: bigforcegun/crometheus
@@ -18,7 +18,7 @@ shards:
 
   db:
     github: crystal-lang/crystal-db
-    version: 0.5.1
+    version: 0.7.0
 
   discordcr:
     github: greenbigfrog/discordcr
@@ -54,7 +54,7 @@ shards:
 
   pg:
     github: greenbigfrog/crystal-pg
-    commit: e12b2557682e7cbe18206c1e00a30cd83db19db7
+    commit: 764797e80675906c05ca7a0b02c2839f6dbb4522
 
   pool:
     github: ysbaddaden/pool
@@ -74,11 +74,11 @@ shards:
 
   tb:
     github: greenbigfrog/tipbot-common
-    commit: 93b9852f633f2c2c97114e92150613de66b83df0
+    commit: a1f61064313b02f200f05dedef379a9d905c4c90
 
   tb-worker:
     github: greenbigfrog/tipbot-worker
-    commit: 94af3a9065ad6473ab09ae97f9a1b9f63c6f4c9d
+    commit: 1d9ef3697ca93b11a2b89d5778e5f6f4a24709dd
 
   twitcr:
     github: greenbigfrog/twitcr
