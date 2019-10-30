@@ -33,6 +33,14 @@ body {
 	align-items: center;
 }
 
+.header .menu {
+	display: flex;
+}
+
+.header .login {
+	display: flex;
+}
+
 .footer {
 	background-color: #fbeaff;
 	grid-row: footer;
@@ -73,4 +81,21 @@ body {
 .header a:active {
 	position:relative;
 	top:1px;
+}
+
+@media (min-width: 320px) and (max-width: 1024px) {
+	.header a {
+		margin: 2px;
+	}
+	.header {
+		flex-direction: column;
+	}
+	
+	.menu {
+		flex-direction: column;
+	}
+	
+	.login {
+		flex-direction: column;
+	}
 }
