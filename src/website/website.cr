@@ -267,7 +267,8 @@ class Website
       guilds = Array(DiscordGuild).from_json(redis.get("admin_guilds-#{user}").not_nil!)
       halt env, status_code: 403 unless guilds.any? { |x| x.id == guild }
 
-      prefix = params["prefix"]? # leave string
+      prefix = params["prefix"]?
+      prefix = nil if prefix == ""
 
       mention = params["mention"]? ? true : false
       soak = params["soak"]? ? true : false
