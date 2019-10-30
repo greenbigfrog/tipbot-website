@@ -27,107 +27,34 @@
 	display: flex;
 	flex-direction: column;
 }
-
-.guild-config {
-	display: flex;
-	flex-direction: column;
-}
-
-.guild-config form {
-	display: flex;
-	flex-direction: column;
-}
-
-.option {
-	margin: 1px;
-}
-
 </style>
-	<body>
-		<title>Configuration</title>
-		<% coins = TB::Data::Coin.read_all %>
-		<!-- GUILDS -->
-		<% if guilds_json = redis.get("admin_guilds-#{user}") %>
-			<% guilds = Array(DiscordGuild).from_json(guilds_json) %>
-				<div class="guilds">
-				<% guilds.each do |guild| %>
-					<div class="guild-card">
-						<%= "<img class=\"guild-icon\" src=\"https://cdn.discordapp.com/icons/#{guild.id}/#{guild.icon}.png\"/>" if guild.icon %>
-						<div class="config-card">
-							<h2 class="guild-name"><%= guild.name %></h2>
-							<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
-							<% if configs.empty? %>
-								<a href="https://discordapp.com/api/oauth2/authorize?client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>">Add bot to guild</a>
-							<% else %>
-								<% configs.each do |conf| %>
-									<% coin = coins[conf.coin] %>
-									<div class="guild-config">
-										<h1>Coin: <%= coin.name_long %></h1>
-										<form action="/api/guild_config" method="post">
-											<div class="option">
-												<label for="prefix">Prefix</label>
-												<input name="prefix" type="text" placeholder="<%= conf.prefix || coin.prefix %>">
-											</div>
 
-											<div class="option">
-												<label for="soak">Soak</label>
-												<input name="soak" type="checkbox" <%= "checked=\"true\"" if conf.soak %>>
-											</div>
-											<div class="option">
-												<label for="rain">Rain</label>
-												<input name="rain" type="checkbox" <%= "checked=\"true\"" if conf.rain %>>
-											</div>
-											<div class="option">
-												<label for="mention">Mention</label>
-												<input name="mention" type="checkbox" <%= "checked=\"true\"" if conf.mention %>>
-											</div>
-
-											<div class="option">
-												<label for="min_tip">Minium Tip</label>
-												<input name="min_tip" type="number" min=0 placeholder="<%= conf.min_tip || coin.default_min_tip %>">
-											</div>
-											<div class="option">
-												<label for="min_lucky">Minium Lucky</label>
-												<input name="min_lucky" type="number" min=0 placeholder="<%= conf.min_lucky || coin.default_min_lucky %>">
-											</div>
-											<div class="option">
-												<label for="min_rain">Minium Rain</label>
-												<input name="min_rain" type="number" min=0 placeholder="<%= conf.min_rain || coin.default_min_rain %>">
-											</div>
-											<div class="option">
-												<label for="min_rain_total">Minium Rain Total</label>
-												<input name="min_rain_total" type="number" min=0 placeholder="<%= conf.min_rain_total || coin.default_min_rain_total %>">
-											</div>
-											<div class="option">
-												<label for="min_soak">Minium Soak</label>
-												<input name="min_soak" type="number" min=0 placeholder="<%= conf.min_soak || coin.default_min_soak %>">
-											</div>
-											<div class="option">
-												<label for="min_soak_total">Minium Soak Total</label>
-												<input name="min_soak_total" type="number" min=0 placeholder="<%= conf.min_soak_total || coin.default_min_soak_total %>">
-											</div>
-
-											<div class="option">
-												<input type="hidden" name="config_id" value="<%= conf.id %>">
-												<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
-												<button type="submit">Save</button>
-												<% if env.session.bool?("saved_guild_config") %>
-													<% env.session.bool("saved_guild_config", false) %>
-													<%= "SAVED" %>
-												<% end %>
-											</div>
-										</form>
-									</div>
-								<% end %>
-							<% end %>
-						</div>
+<body>
+	<title>Configuration</title>
+	<% coins = TB::Data::Coin.read_all %>
+	<!-- GUILDS -->
+	<% if guilds_json = redis.get("admin_guilds-#{user}") %>
+		<% guilds = Array(DiscordGuild).from_json(guilds_json) %>
+			<div class="guilds">
+			<% guilds.each do |guild| %>
+				<div class="guild-card">
+					<%= "<img class=\"guild-icon\" src=\"https://cdn.discordapp.com/icons/#{guild.id}/#{guild.icon}.png\"/>" if guild.icon %>
+					<div class="config-card">
+						<h2 class="guild-name"><%= guild.name %></h2>
+						<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
+						<% if configs.empty? %>
+							<a href="https://discordapp.com/api/oauth2/authorize?client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>">Add bot to guild</a>
+						<% else %>
+							<a href="/configuration/guild?id=<%= guild.id %>">Configure bot for guild</a>
+						<% end %>
 					</div>
-				<% end %>
 				</div>
-		<% else %>
-		    <a href="/auth/discord?scope=guilds">Reauthenticate with guilds scope</a>
-		<% end %>
-		<!-- TWITCH -->
-		<!-- TODO -->
-	</body>
+			<% end %>
+			</div>
+	<% else %>
+	    <a href="/auth/discord?scope=guilds">Reauthenticate with guilds scope</a>
+	<% end %>
+	<!-- TWITCH -->
+	<!-- TODO -->
+</body>
 </html>

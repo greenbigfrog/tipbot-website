@@ -91,6 +91,14 @@ class Website
       default_render("configuration.ecr")
     end
 
+    get "/configuration/guild" do |env|
+      user = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless user.is_a?(Int64)
+
+      guild = env.params.query["id"].to_i64
+      default_render("configuration_guild.ecr")
+    end
+
     get "/admin" do |env|
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
@@ -251,10 +259,6 @@ class Website
       env.redirect("/deposit")
     end
 
-    {"prefix", "mention", "soak", "rain", "min_soak",
-     "min_soak_total", "min_rain", "min_rain_total",
-     "min_tip", "min_lucky"}
-
     post "/api/guild_config" do |env|
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
@@ -284,9 +288,7 @@ class Website
       TB::Data::Discord::Guild.update_config(config_id, prefix, mention, soak, rain,
         min_soak, min_soak_total, min_rain, min_rain_total,
         min_tip, min_lucky)
-
-      env.session.bool("saved_guild_config", true)
-      env.redirect("/configuration")
+      nil
     end
 
     Kemal.run
