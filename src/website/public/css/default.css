@@ -30,10 +30,7 @@ body {
 
 	display: flex;
 	justify-content: space-between;
-}
-
-.header .menu {
-	display: flex;
+	align-items: center;
 }
 
 .footer {
