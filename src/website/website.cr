@@ -95,8 +95,12 @@ class Website
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
 
-      guild = env.params.query["id"].to_i64
-      default_render("configuration_guild.ecr")
+      if guild = env.params.query["id"]?
+        guild = guild.to_i64
+        default_render("configuration_guild.ecr")
+      else
+        env.redirect("/configuration")
+      end
     end
 
     get "/admin" do |env|
