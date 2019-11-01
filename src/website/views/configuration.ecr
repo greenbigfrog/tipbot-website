@@ -1,32 +1,45 @@
 <html>
 <style>
+
 .guilds {
+	height: 100%;
+
  	display: flex;
- 	flex-direction: column;
+
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-content: center;
 }
 
 .guild-card {
-	display: grid;
-	grid-template-columns: 1fr 6fr;
 	margin: 5px;
 	background: #E9E7E7;
-	border-radius: 5px;
-}
-.guild-icon {
-	display: inline;
-	grid-column: 1;
-	padding: 10px;
-}
-.guild-config {
-	background: #F3EEEE;
-}
+	height: 100px;
+	width: 100px;
+	padding: 5px;
 
-.config-card {
-	grid-column: 2;
+	border-radius: 50%;
+
+	font-size: 30px;
+	text-decoration: none;
+	color: black;
 
 	display: flex;
-	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
+
+.guild-card:hover {
+	box-shadow: 5px 5px 0px 0px #29574f;
+}
+
+.guild-icon {
+	width: 100%;
+	height: auto;
+
+	border-radius: 50%;
+}
+
 </style>
 
 <body>
@@ -37,18 +50,18 @@
 		<% guilds = Array(DiscordGuild).from_json(guilds_json) %>
 			<div class="guilds">
 			<% guilds.each do |guild| %>
-				<div class="guild-card">
-					<%= "<img class=\"guild-icon\" src=\"https://cdn.discordapp.com/icons/#{guild.id}/#{guild.icon}.png\"/>" if guild.icon %>
-					<div class="config-card">
-						<h2 class="guild-name"><%= guild.name %></h2>
-						<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
-						<% if configs.empty? %>
-							<a href="https://discordapp.com/api/oauth2/authorize?client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>">Add bot to guild</a>
-						<% else %>
-							<a href="/configuration/guild?id=<%= guild.id %>">Configure bot for guild</a>
-						<% end %>
-					</div>
-				</div>
+				<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
+				<% if configs.empty? %>
+					<a class="guild-card" href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>&redirect_uri=<%= ENV["HOST"] %>/configuration/guild">
+				<% else %>
+					<a class="guild-card" href="/configuration/guild?guild_id=<%= guild.id %>">
+				<% end %>
+					<% if guild.icon %>
+						<%= "<img class=\"guild-icon\" src=\"https://cdn.discordapp.com/icons/#{guild.id}/#{guild.icon}.png\"/>" %>
+					<% else %>
+						<%= "<span>#{guild.name.scan(/\b\w|-/).join(" ", &.[0][0])}</span>" %>
+					<% end %>
+				</a>
 			<% end %>
 			</div>
 	<% else %>

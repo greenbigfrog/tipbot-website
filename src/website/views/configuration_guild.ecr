@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 				</div>
 
 				<div class="option">
-					<!-- <input type="hidden" name="id" value="<%= guild %>"> -->
 					<input type="hidden" name="config_id" value="<%= conf.id %>">
 					<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
 					<button type="submit">Save</button>
