@@ -1,8 +1,15 @@
+:root {
+	--c-header: #845ec2;
+	--c-footer: #fbeaff;
+	--c-header-shadow: #29574f;
+	--c-header-button: #00c9a8;
+	--c-header-button-hover: #04B094;
+}
+
 * {
 	margin: 0;
 	padding: 0;
 }
-
 
 html {
 	height: 100%;
@@ -21,7 +28,7 @@ body {
 }
 
 .header {
-	background-color: #845ec2;
+	background-color: var(--c-header);
 	grid-row: header;
 	grid-column: full;
 
@@ -38,28 +45,20 @@ body {
 }
 
 .footer {
-	background-color: #fbeaff;
+	background-color: var(--c-footer);
 	grid-row: footer;
 	grid-column: full;
 }
 
-.sth {
-	background-color: #b39cd0;
-}
-
-.notif {
-	background-color:  #00c9a7;
-}
-
 .header a {
-	-moz-box-shadow: 1px 1px 0px 0px #29574f;
-	-webkit-box-shadow: 1px 1px 0px 0px #29574f;
-	box-shadow: 1px 1px 0px 0px #29574f;
-	background-color:#00c9a8;
+	-moz-box-shadow: 1px 1px 0px 0px var(--c-header-shadow);
+	-webkit-box-shadow: 1px 1px 0px 0px var(--c-header-shadow);
+	box-shadow: 1px 1px 0px 0px var(--c-header-shadow);
+	background-color:var(--c-header-button);
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
 	border-radius:5px;
-	border:2px solid #00c9a8;
+	border:2px solid var(--c-header-button);
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
@@ -72,7 +71,7 @@ body {
 	margin-right: 5px;
 }
 .header a:hover {
-	background-color:#04B094;
+	background-color:var(--c-header-button-hover);
 }
 .header a:active {
 	position:relative;
