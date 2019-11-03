@@ -44,6 +44,8 @@ end
 STDOUT.sync = true
 
 class Website
+  CACHE_TIMESTAMP = Time.utc.to_unix
+
   def self.run
     # Check for potential missed deposits during downtime
     queue_history_deposits_check
