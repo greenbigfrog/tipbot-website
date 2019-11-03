@@ -1,21 +1,22 @@
 .login_wrapper {
-	display: grid;
-	grid-template-columns: 1.5fr [login] 1fr [login] 1.5fr;
-	grid-template-rows: 2fr 1fr [login] 1fr [login] 1fr;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	height: 100%;
 }
 
-.login {
-	grid-area: login;
+.login_wrapper div {
+	padding: 10px;
+	border-radius: 5px;
+	background-color: var(--c-grey-3);
+}
+
+.login-options {
 	display: flex;
 	flex-direction: column;
 }
 
-.login_notif {
-	grid-row: 2;
-	grid-column: login;
-}
-
-i {
+.btn svg {
 	padding: 5px;
 }
 
@@ -31,17 +32,16 @@ i {
 	text-align: center;
 	
 	border-radius: 5px;
-	box-shadow: 5px 5px 5px grey;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .btn-twitch {
-	color: white; 
-	background-color: #6441A5;
-	border-color: #5E3D9C;
+	background-color: #6441A4;
 }
 
 .btn-discord {
-	color: white;
 	background-color: #7289DA;
-	border-color: #6479BF;
 }
