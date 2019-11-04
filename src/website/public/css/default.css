@@ -102,10 +102,11 @@ a:hover {
 	display: none;
 }
 
-.fa {
-	height: 30px;
-	width: auto;
-	margin: 5px;
+.display-menu svg {
+	fill: var(--c-secondary);
+	padding: 5px;
+	min-height: 40px;
+	margin-left: 10px;
 }
 
 @media (max-width: 700px) {
