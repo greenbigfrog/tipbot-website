@@ -19,6 +19,7 @@
 	--c-primary: #bc97f2;
 	--c-primary-dark: #5400d5;
 	--c-secondary: #80d500;
+	--c-text: #FFFFFF;
 }
 
 
@@ -107,6 +108,20 @@ a:hover {
 	padding: 5px;
 	min-height: 40px;
 	margin-left: 10px;
+}
+
+.footer {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+
+	fill: var(--c-text);
+}
+
+.footer a {
+	text-decoration: none;
+	display: flex;
+	align-items: center;
 }
 
 @media (max-width: 700px) {
