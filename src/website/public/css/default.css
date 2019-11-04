@@ -1,10 +1,21 @@
+/* raleway-regular - latin */
+@font-face {
+	font-family: 'Raleway';
+	font-style: normal;
+	font-weight: 400;
+	font-display: optional;
+	src: local('Raleway'), local('Raleway-Regular'),
+		url('../fonts/raleway-v12-latin-regular.woff2') format('woff2'),
+		url('../fonts/raleway-v12-latin-regular.woff') format('woff');
+}
+
 :root {
 	--c-grey-1: #121212;
 	--c-grey-2: #333333;
 	--c-grey-3: #555555;
 	--c-grey-4: #777777;
 	--c-grey-5: #999999;
-	--c-bg: #121212;
+	--c-bg: #191919;
 	--c-primary: #bc97f2;
 	--c-primary-dark: #5400d5;
 	--c-secondary: #80d500;
@@ -22,13 +33,14 @@ html {
 
 body {
 	display: grid;
-	grid-template-rows: [header-start] 6vh [header-end content-start] 10fr [content-end footer-start] 1fr [footer-end];
+	grid-template-rows: [header-start] auto [header-end content-start] 10fr [content-end footer-start] 1fr [footer-end];
 	grid-template-columns: [full-start] 1fr [content-start] 10fr [content-end] 1fr [full-end];
 
 	min-height: 100%;
 
 	background-color: var(--c-bg);
 	color: white;
+	font-family: "Raleway", sans-serif;
 }
 
 .content {
@@ -69,7 +81,6 @@ a:hover {
 .header a {
 	display:inline-block;
 	cursor:pointer;
-	font-family:Georgia;
 	font-size:16px;
 	font-weight:bold;
 	padding:3px 5px;
@@ -133,7 +144,6 @@ a:hover {
 
 	.header #display-menu {
 		opacity: 0;
-		display: inline;
 	}
 
 	.header {
@@ -146,6 +156,9 @@ a:hover {
 
 	.header a {
 		margin: 2px;
+		margin-right: 10px;
+		margin-left: 10px;
+		background-color: var(--c-grey-3);
 	}
 
 	.header div {
