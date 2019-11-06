@@ -1,51 +1,103 @@
-<html>
-	<style>
-		.deposit_address {
-			padding: 2px;
+<style>
+.deposit-address {
+	padding: 2px;
+	margin: 10px;
 
-			user-select: all;
-			-webkit-user-select: all;
+	user-select: all;
+	-webkit-user-select: all;
 
-			background-color: #DCDCDC;
-			border-radius: 3px;
-			color: black;
-		}
+	background-color: #DCDCDC;
+	border-radius: 3px;
+	color: black;
+}
 
-		.info {
-			display: inline;
-		}
+.deposit-addresses {
+	display: flex;
+	justify-content: space-around;
+}
 
-		.info text {
-			display: none;
+.deposit {
+	display: flex;
+	width: 50%;
+	justify-content: space-between;
+	align-items: center;
+	padding: 2px;
 
-			background-color: #ffe4fd;
-			padding: 2px;
-			margin: 2px;
-			border-radius: 2px;
-		}
+	background-color: var(--c-grey-3);
+}
 
-		.info button:hover + text {
-			display: inline;
-		}
-	</style>
-	<body>
-		<title>Deposit</title>
-		<% tmp_coin_list = TB::Data::Coin.read_all %>
-		<% TB::Data::DepositAddress.read_all_active_for_account(user.to_i32).each do |deposit| %>
-			<% name = tmp_coin_list[deposit.coin].name_long %>
-			<%= name %>: <text class="deposit_address"><%= deposit.address %></text>
-			<div class="info">
-				<button><svg class="fa" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512" data-fa-i2svg=""><path fill="currentColor" d="M20 424.229h20V279.771H20c-11.046 0-20-8.954-20-20V212c0-11.046 8.954-20 20-20h112c11.046 0 20 8.954 20 20v212.229h20c11.046 0 20 8.954 20 20V492c0 11.046-8.954 20-20 20H20c-11.046 0-20-8.954-20-20v-47.771c0-11.046 8.954-20 20-20zM96 0C56.235 0 24 32.235 24 72s32.235 72 72 72 72-32.235 72-72S135.764 0 96 0z"></path></svg></button>
-				<text>Generated at <%= deposit.created_time %></text>
+.hidden {
+	display: none;
+}
+
+.info text {
+	display: none;
+
+	background-color: #ffe4fd;
+	padding: 2px;
+	margin: 2px;
+	border-radius: 2px;
+}
+
+.info button:hover + text {
+	display: inline;
+}
+</style>
+<script type="text/javascript">
+function generateDeposit(event) {
+  var coin = event.target["coin"].value
+  var url = "/api/generate_deposit_address";
+  var request = new XMLHttpRequest();
+  request.open('POST', url, true);
+  request.onload = function() {
+	alert("Successfully generated Deposit Address. Keep in mind that it's one time use only")
+  };
+
+  request.onerror = function() {
+	alert("Something went wrong. Please try again later")
+  };
+
+  request.onreadystatechange = function() {
+	if (request.readyState == XMLHttpRequest.DONE) {
+		document.getElementById("deposit-address-" + coin).innerHTML = request.responseText;
+		document.getElementById("info-" + coin).classList.remove("hidden");
+		document.getElementById("generate-deposit-" + coin).classList.add("hidden");
+	}
+  }
+
+  request.send(new FormData(event.target));
+  console.log("Sent")
+
+  event.preventDefault();
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+	document.querySelectorAll(".generate-deposit").forEach (function(element) {
+		element.addEventListener("submit", generateDeposit);
+	})
+})
+</script>
+<body>
+	<title>Deposit</title>
+	<% coins = TB::Data::Coin.read_all %>
+	<% deposit_addresses = TB::Data::DepositAddress.read_all_active_for_account(user.to_i32) %>
+	<div class="deposit-addresses">
+	<% coins.each do |coin| %>
+		<% coin = coin[1] %>
+		<div class="deposit">
+			<% address = deposit_addresses[coin.id]? %>
+			<h2><%= coin.name_long %>:</h2>
+			<text class="deposit-address" id="deposit-address-<%= coin.id %>"><%= address ? address.address : "NULL" %></text>
+			<div class="info <%= address ? nil : "hidden" %>" id="info-<%= coin.id %>">
+				<button><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24"viewBox="0 0 24 24"><path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path></svg></button>
+				<text>Generated at <%= address ? address.created_time : nil %></text>
 			</div>
-			<% tmp_coin_list.delete(deposit.coin) %>
-		<% end %>
-		<% tmp_coin_list.each_value do |coin| %>
-		<form method="post" action="/api/generate_deposit_address?coin=<%= coin.id%>">
-			<%= "#{coin.name_long}: " %>
-			<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
-			<button type="submit">Generate Deposit Address</button>
-		</form>
-		<% end %>
-	</body>
-</html>
+			<form class="generate-deposit <%= address ? "hidden" : nil %>" id="generate-deposit-<%= coin.id %>">
+				<input type="hidden" name="coin" value="<%= coin.id %>">
+				<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
+				<button type="submit">Generate Deposit Address</button>
+			</form>
+		</div>
+	<% end %>
+	</div>
+</body>

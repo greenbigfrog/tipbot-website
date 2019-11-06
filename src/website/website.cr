@@ -250,10 +250,12 @@ class Website
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
 
-      coin = TB::Data::Coin.read(env.params.query["coin"].to_i32)
+      params = env.params.body
+      coin = TB::Data::Coin.read(params["coin"].to_i32)
 
+      address = nil
       begin
-        TB::Data::DepositAddress.read_or_create(coin, TB::Data::Account.read(user))
+        address = TB::Data::DepositAddress.read_or_create(coin, TB::Data::Account.read(user))
       rescue ex
         if ex.message == "Unable to connect to RPC"
           halt env, 503, "Please try again later. Unable to connect to RPC"
@@ -262,7 +264,7 @@ class Website
         end
       end
 
-      env.redirect("/deposit")
+      address.to_s
     end
 
     post "/api/guild_config" do |env|
