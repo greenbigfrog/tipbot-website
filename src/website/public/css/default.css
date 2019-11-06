@@ -64,12 +64,6 @@ body {
 	display: flex;
 }
 
-.footer {
-	background-color: var(--c-grey-2);
-	grid-row: footer;
-	grid-column: full;
-}
-
 a {
 	color:#DEDEDE;
 }
@@ -111,6 +105,12 @@ a:hover {
 }
 
 .footer {
+	background-color: var(--c-grey-2);
+	grid-row: footer;
+	grid-column: full;
+	padding-top: 5px;
+	padding-bottom: 5px;
+
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
