@@ -44,6 +44,10 @@ class DiscordOAuth2
       redirect_uri: redirect_uri)
   end
 
+  def client
+    @client
+  end
+
   def authorize_uri(scope)
     @client.get_authorize_uri(scope)
   end

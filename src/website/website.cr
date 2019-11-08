@@ -143,7 +143,10 @@ class Website
           scope = "guilds"
           env.session.bool("store_admin_guilds", true)
         end
-        env.redirect(discord_auth.authorize_uri(scope))
+        redirect = discord_auth.client.get_authorize_uri(scope) do |url|
+          url.add("prompt", "none")
+        end
+        env.redirect(redirect)
       when "twitch" then env.redirect(twitch_auth.authorize_uri(""))
       else               halt env, status_code: 400
       end
