@@ -33,7 +33,7 @@ add_handler Raven::Kemal::ExceptionHandler.new
 
 Kemal::Session.config do |config|
   config.secret = ENV["SECRET"]
-  config.timeout = 10.minutes
+  config.timeout = 1.hour
   config.engine = Kemal::Session::RedisEngine.new(host: "redis", port: 6379)
 end
 
