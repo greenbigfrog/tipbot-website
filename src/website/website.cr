@@ -99,6 +99,11 @@ class Website
 
       if guild = env.params.query["guild_id"]?
         guild = guild.to_i64
+
+        discord_guilds = Array(DiscordGuild).from_json(redis.get("admin_guilds-#{user}").not_nil!)
+        discord_guild = discord_guilds.find { |x| x.id == guild }
+        halt env, status_code: 403 unless discord_guild
+
         default_render("configuration_guild.ecr")
       else
         env.redirect("/configuration")

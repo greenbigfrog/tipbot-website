@@ -1,7 +1,58 @@
 <style>
+.config-wrapper {
+	height: 100%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.guild {
+	display: flex;
+	align-items: center;
+	background-color: var(--c-grey-3);
+	border-radius: 5px;
+}
+
+.guild h1 {
+	padding: 5px;
+	margin: 10px;
+}
+
+.guild .icon {
+	margin: 10px;
+	width: 80px;
+	height: 80px;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+
+	font-size: 25px;
+
+	border-radius: 50%;
+	background-color: var(--c-grey-2);
+}
+
+.guild .icon img {
+	width: 100%;
+	height: auto;
+}
+
+.configs {
+	display: flex;
+	justify-content: space-evenly;
+}
+
 .guild-config {
 	display: flex;
 	flex-direction: column;
+
+	background-color: var(--c-grey-2);
+	padding: 20px;
+	border-radius: 5px;
 }
 
 .guild-config form {
@@ -10,7 +61,14 @@
 }
 
 .option {
-	margin: 1px;
+	padding: 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.option label {
+	margin-right: 50px;
 }
 
 #status {
@@ -46,61 +104,76 @@ document.addEventListener('DOMContentLoaded', (event) => {
 	<% coins = TB::Data::Coin.read_all %>
 	<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild) %>
 
-	<% configs.each do |conf| %>
-		<% coin = coins[conf.coin] %>
-		<div class="guild-config">
-			<h1>Coin: <%= coin.name_long %></h1>
-			<form id="config-form">
-				<div class="option">
-					<label for="prefix">Prefix</label>
-					<input name="prefix" type="text" placeholder="<%= conf.prefix || coin.prefix %>">
-				</div>
-
-				<div class="option">
-					<label for="soak">Soak</label>
-					<input name="soak" type="checkbox" <%= "checked=\"true\"" if conf.soak %>>
-				</div>
-				<div class="option">
-					<label for="rain">Rain</label>
-					<input name="rain" type="checkbox" <%= "checked=\"true\"" if conf.rain %>>
-				</div>
-				<div class="option">
-					<label for="mention">Mention</label>
-					<input name="mention" type="checkbox" <%= "checked=\"true\"" if conf.mention %>>
-				</div>
-
-				<div class="option">
-					<label for="min_tip">Minium Tip</label>
-					<input name="min_tip" type="number" min=0 placeholder="<%= conf.min_tip || coin.default_min_tip %>">
-				</div>
-				<div class="option">
-					<label for="min_lucky">Minium Lucky</label>
-					<input name="min_lucky" type="number" min=0 placeholder="<%= conf.min_lucky || coin.default_min_lucky %>">
-				</div>
-				<div class="option">
-					<label for="min_rain">Minium Rain</label>
-					<input name="min_rain" type="number" min=0 placeholder="<%= conf.min_rain || coin.default_min_rain %>">
-				</div>
-				<div class="option">
-					<label for="min_rain_total">Minium Rain Total</label>
-					<input name="min_rain_total" type="number" min=0 placeholder="<%= conf.min_rain_total || coin.default_min_rain_total %>">
-				</div>
-				<div class="option">
-					<label for="min_soak">Minium Soak</label>
-					<input name="min_soak" type="number" min=0 placeholder="<%= conf.min_soak || coin.default_min_soak %>">
-				</div>
-				<div class="option">
-					<label for="min_soak_total">Minium Soak Total</label>
-					<input name="min_soak_total" type="number" min=0 placeholder="<%= conf.min_soak_total || coin.default_min_soak_total %>">
-				</div>
-
-				<div class="option">
-					<input type="hidden" name="config_id" value="<%= conf.id %>">
-					<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
-					<button type="submit">Save</button>
-					<div id="status">SAVED</div>
-				</div>
-			</form>
+	<div class="config-wrapper">
+		<div class="guild">
+			<div class="icon">
+				<% if discord_guild.icon %>
+					<%= "<img src=\"https://cdn.discordapp.com/icons/#{guild}/#{discord_guild.icon}.png\"/>" %>
+				<% else %>
+					<%= "<span>#{discord_guild.name.scan(/\b\w|-/).join(" ", &.[0][0])}</span>" %>
+				<% end %>
+			</div>
+			<h1><%= discord_guild.name %></h1>
 		</div>
-	<% end %>
+
+		<div class="configs">
+		<% configs.each do |conf| %>
+			<% coin = coins[conf.coin] %>
+			<div class="guild-config">
+				<h1>Coin: <%= coin.name_long %></h1>
+				<form id="config-form">
+					<div class="option">
+						<label for="prefix">Prefix</label>
+						<input name="prefix" type="text" placeholder="<%= conf.prefix || coin.prefix %>">
+					</div>
+
+					<div class="option">
+						<label for="soak">Soak</label>
+						<input name="soak" type="checkbox" <%= "checked=\"true\"" if conf.soak %>>
+					</div>
+					<div class="option">
+						<label for="rain">Rain</label>
+						<input name="rain" type="checkbox" <%= "checked=\"true\"" if conf.rain %>>
+					</div>
+					<div class="option">
+						<label for="mention">Mention</label>
+						<input name="mention" type="checkbox" <%= "checked=\"true\"" if conf.mention %>>
+					</div>
+
+					<div class="option">
+						<label for="min_tip">Min Tip</label>
+						<input name="min_tip" type="number" min=0 placeholder="<%= conf.min_tip || coin.default_min_tip %>">
+					</div>
+					<div class="option">
+						<label for="min_lucky">Min Lucky</label>
+						<input name="min_lucky" type="number" min=0 placeholder="<%= conf.min_lucky || coin.default_min_lucky %>">
+					</div>
+					<div class="option">
+						<label for="min_rain">Min Rain</label>
+						<input name="min_rain" type="number" min=0 placeholder="<%= conf.min_rain || coin.default_min_rain %>">
+					</div>
+					<div class="option">
+						<label for="min_rain_total">Min Rain Total</label>
+						<input name="min_rain_total" type="number" min=0 placeholder="<%= conf.min_rain_total || coin.default_min_rain_total %>">
+					</div>
+					<div class="option">
+						<label for="min_soak">Min Soak</label>
+						<input name="min_soak" type="number" min=0 placeholder="<%= conf.min_soak || coin.default_min_soak %>">
+					</div>
+					<div class="option">
+						<label for="min_soak_total">Min Soak Total</label>
+						<input name="min_soak_total" type="number" min=0 placeholder="<%= conf.min_soak_total || coin.default_min_soak_total %>">
+					</div>
+
+					<div class="option">
+						<input type="hidden" name="config_id" value="<%= conf.id %>">
+						<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
+						<button type="submit">Save</button>
+						<div id="status">SAVED</div>
+					</div>
+				</form>
+			</div>
+		<% end %>
+		</div>
+	</div>
 </body>
