@@ -50,8 +50,6 @@ class Website
     # Check for potential missed deposits during downtime
     queue_history_deposits_check
 
-    redis = Redis.new(url: ENV["REDIS_URL"]?)
-
     redirect_uri = "#{ENV["HOST"]}/auth/callback/"
 
     discord_auth = DiscordOAuth2.new(ENV["DISCORD_CLIENT_ID"], ENV["DISCORD_CLIENT_SECRET"], redirect_uri + "discord")
@@ -100,7 +98,7 @@ class Website
       if guild = env.params.query["guild_id"]?
         guild = guild.to_i64
 
-        discord_guilds = Array(DiscordGuild).from_json(redis.get("admin_guilds-#{user}").not_nil!)
+        discord_guilds = env.session.object("admin_guilds").guilds
         discord_guild = discord_guilds.find { |x| x.id == guild }
         halt env, status_code: 403 unless discord_guild
 
@@ -181,7 +179,7 @@ class Website
 
       env.session.bigint("user_id", user_id)
       if guilds
-        redis.set("admin_guilds-#{user_id}", guilds.to_json)
+        env.session.object("admin_guilds", GuildsArray.new(guilds))
       end
 
       origin = env.session.string?("origin")
@@ -284,7 +282,7 @@ class Website
 
       guild = TB::Data::Discord::Guild.read_guild_id(config_id)
 
-      guilds = Array(DiscordGuild).from_json(redis.get("admin_guilds-#{user}").not_nil!)
+      guilds = env.session.object("admin_guilds").guilds
       halt env, status_code: 403 unless guilds.any? { |x| x.id == guild }
 
       prefix = params["prefix"]?

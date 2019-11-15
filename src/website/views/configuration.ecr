@@ -45,24 +45,24 @@
 	<title>Configuration</title>
 	<% coins = TB::Data::Coin.read_all %>
 	<!-- GUILDS -->
-	<% if guilds_json = redis.get("admin_guilds-#{user}") %>
-		<% guilds = Array(DiscordGuild).from_json(guilds_json) %>
-			<div class="guilds">
-			<% guilds.each do |guild| %>
-				<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
-				<% if configs.empty? %>
-					<a class="guild-card" href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>&redirect_uri=<%= ENV["HOST"] %>/configuration/guild">
-				<% else %>
-					<a class="guild-card" href="/configuration/guild?guild_id=<%= guild.id %>">
-				<% end %>
-					<% if guild.icon %>
-						<%= "<img class=\"guild-icon\" src=\"https://cdn.discordapp.com/icons/#{guild.id}/#{guild.icon}.png\"/>" %>
-					<% else %>
-						<%= "<span>#{guild.name.scan(/\b\w|-/).join(" ", &.[0][0])}</span>" %>
-					<% end %>
-				</a>
+	<% if guild_array = env.session.object?("admin_guilds") %>
+		<% guilds = guild_array.guilds %>
+		<div class="guilds">
+		<% guilds.each do |guild| %>
+			<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
+			<% if configs.empty? %>
+				<a class="guild-card" href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>&redirect_uri=<%= ENV["HOST"] %>/configuration/guild">
+			<% else %>
+				<a class="guild-card" href="/configuration/guild?guild_id=<%= guild.id %>">
 			<% end %>
-			</div>
+				<% if guild.icon %>
+					<%= "<img class=\"guild-icon\" src=\"https://cdn.discordapp.com/icons/#{guild.id}/#{guild.icon}.png\"/>" %>
+				<% else %>
+					<%= "<span>#{guild.name.scan(/\b\w|-/).join(" ", &.[0][0])}</span>" %>
+				<% end %>
+			</a>
+		<% end %>
+		</div>
 	<% else %>
 	    <a href="/auth/discord?scope=guilds">Reauthenticate with guilds scope</a>
 	<% end %>
