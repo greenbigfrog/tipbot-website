@@ -4,6 +4,7 @@ require "kemal-session"
 require "oauth2"
 require "kemal-session-redis"
 
+require "raven"
 require "raven/integrations/kemal"
 
 require "tb"
@@ -29,7 +30,10 @@ end
 
 Kemal.config.logger = Raven::Kemal::LogHandler.new(Kemal::LogHandler.new)
 
+Kemal.config.env = "production"
+
 add_handler Raven::Kemal::ExceptionHandler.new
+add_handler Raven::Kemal::UserFeedbackHandler.new
 
 Kemal::Session.config do |config|
   config.secret = ENV["SECRET"]
@@ -39,6 +43,10 @@ end
 
 macro default_render(file)
   render("src/website/views/#{{{file}}}", "src/website/layouts/default.ecr")
+end
+
+macro exception_render(code)
+  render("src/website/views/exceptions/#{{{code}}}.ecr", "src/website/layouts/exception.ecr")
 end
 
 STDOUT.sync = true
@@ -305,6 +313,18 @@ class Website
         min_soak, min_soak_total, min_rain, min_rain_total,
         min_tip, min_lucky)
       nil
+    end
+
+    get "/404" do |env|
+      halt env, status_code: 404
+    end
+
+    error 404 do
+      exception_render("404")
+    end
+
+    error 403 do
+      "Access Forbidden!"
     end
 
     Kemal.run

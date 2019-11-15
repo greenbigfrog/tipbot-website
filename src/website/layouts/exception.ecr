@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset=utf-8>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="/css/default.css?<%= CACHE_TIMESTAMP %>">
+	</head>
+	<body>
+		<div class="header">
+			<input type="checkbox" id="display-menu"/>
+			<label class="display-menu" for="display-menu">
+				<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 24 24"><path d="M 2 5 L 2 7 L 22 7 L 22 5 L 2 5 z M 2 11 L 2 13 L 22 13 L 22 11 L 2 11 z M 2 17 L 2 19 L 22 19 L 22 17 L 2 17 z"></path></svg>
+    		</label>
+			<div class= "home">
+				<a href="/">Home</a>
+			</div>
+			<div class="login">
+				<a href="/login">Login</a>
+			</div>
+		</div>
+		<div class="content">
+			<%= content %>
+		</div>
+		<div class="footer">
+			<a href="/terms">ToS</a>
+			<span>Made with ❤️</span>
+			<a href="https://icons8.com">
+				Icons:
+				<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+					<path d="M 4 3 C 3.447 3 3 3.448 3 4 L 3 20 C 3 20.552 3.447 21 4 21 L 11 21 C 11.553 21 12 20.552 12 20 L 12 16.5 L 12 7.5 L 12 4 C 12 3.448 11.553 3 11 3 L 4 3 z M 12 7.5 C 12 9.981 14.019 12 16.5 12 C 18.981 12 21 9.981 21 7.5 C 21 5.019 18.981 3 16.5 3 C 14.019 3 12 5.019 12 7.5 z M 16.5 12 C 14.019 12 12 14.019 12 16.5 C 12 18.981 14.019 21 16.5 21 C 18.981 21 21 18.981 21 16.5 C 21 14.019 18.981 12 16.5 12 z"></path>
+				</svg>
+			</a>
+		</div>
+	</body>
+</html>
