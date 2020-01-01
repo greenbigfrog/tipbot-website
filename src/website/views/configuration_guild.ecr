@@ -117,6 +117,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 		</div>
 
 		<div class="configs">
+		<% if configs.size < coins.size %>
+			<% tmp_configs = configs %>
+			<% coins.each do |coin| %>
+				<% next if configs.any? { |conf| conf.coin == coin } %>
+				<a class="guild-card" href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=<%= coin[1].discord_client_id %>&scope=bot&guild_id=<%= discord_guild.id %>&redirect_uri=<%= URI.escape(ENV["HOST"]) %>/configuration/guild">Add <%= coin[1].name_long %> Tip Bot to server</a>
+			<% end %>
+		<% end %>
 		<% configs.each do |conf| %>
 			<% coin = coins[conf.coin] %>
 			<div class="guild-config">
