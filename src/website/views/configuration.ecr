@@ -51,7 +51,7 @@
 		<% guilds.each do |guild| %>
 			<% configs = TB::Data::Discord::Guild.read_by_guild_id(guild.id) %>
 			<% if configs.empty? %>
-				<a class="guild-card" href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>&redirect_uri=<%= ENV["HOST"] %>/configuration/guild">
+				<a class="guild-card" href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=<%= coins.first[1].discord_client_id %>&scope=bot&guild_id=<%= guild.id %>&redirect_uri=<%= URI.escape(ENV["HOST"]) %>/configuration/guild">
 			<% else %>
 				<a class="guild-card" href="/configuration/guild?guild_id=<%= guild.id %>">
 			<% end %>
