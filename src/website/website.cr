@@ -46,15 +46,14 @@ STDOUT.sync = true
 class Website
   CACHE_TIMESTAMP = Time.utc.to_unix
 
+  class_getter redirect_uri : String = "#{ENV["HOST"]}/auth/callback/"
+  class_getter discord_auth : DiscordOAuth2 = DiscordOAuth2.new(ENV["DISCORD_CLIENT_ID"], ENV["DISCORD_CLIENT_SECRET"], redirect_uri + "discord")
+  class_getter twitch_auth : TwitchOAuth2 = TwitchOAuth2.new(ENV["TWITCH_CLIENT_ID"], ENV["TWITCH_CLIENT_SECRET"], redirect_uri + "twitch")
+  class_getter streamlabs_auth : StreamlabsOAuth2 = StreamlabsOAuth2.new(ENV["SL_CLIENT_ID"], ENV["SL_CLIENT_SECRET"], redirect_uri + "streamlabs")
+
   def self.run
     # Check for potential missed deposits during downtime
     queue_history_deposits_check
-
-    redirect_uri = "#{ENV["HOST"]}/auth/callback/"
-
-    discord_auth = DiscordOAuth2.new(ENV["DISCORD_CLIENT_ID"], ENV["DISCORD_CLIENT_SECRET"], redirect_uri + "discord")
-    twitch_auth = TwitchOAuth2.new(ENV["TWITCH_CLIENT_ID"], ENV["TWITCH_CLIENT_SECRET"], redirect_uri + "twitch")
-    streamlabs_auth = StreamlabsOAuth2.new(ENV["SL_CLIENT_ID"], ENV["SL_CLIENT_SECRET"], redirect_uri + "streamlabs")
 
     get "/" do |env|
       default_render("index.ecr")
@@ -84,29 +83,6 @@ class Website
       user = env.session.bigint?("user_id")
       halt env, status_code: 403 unless user.is_a?(Int64)
       default_render("link_accounts.ecr")
-    end
-
-    get "/configuration" do |env|
-      user = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless user.is_a?(Int64)
-      default_render("configuration.ecr")
-    end
-
-    get "/configuration/guild" do |env|
-      user = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless user.is_a?(Int64)
-
-      if guild = env.params.query["guild_id"]?
-        guild = guild.to_i64
-
-        discord_guilds = env.session.object("admin_guilds").guilds
-        discord_guild = discord_guilds.find { |x| x.id == guild }
-        halt env, status_code: 403 unless discord_guild
-
-        default_render("configuration_guild.ecr")
-      else
-        env.redirect("/configuration")
-      end
     end
 
     get "/admin" do |env|
@@ -143,80 +119,8 @@ class Website
       default_render("streamlabs.ecr")
     end
 
-    get "/donate/:id" do |env|
-      user = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless user.is_a?(Int64)
-
-      receipient = env.params.url["id"].to_i64
-      streamlabs_token = TB::Data::Account.read_streamlabs_token(receipient)
-      env.redirect "/donate/no_streamlabs_token" unless streamlabs_token
-
-      default_render("donate/donate.ecr")
-    end
-
-    get "/donate/no_streamlabs_token" do |env|
-      default_render("donate/no_streamlabs_token.ecr")
-    end
-
     get "/login" do |env|
       default_render("login.ecr")
-    end
-
-    get "/auth/:platform" do |env|
-      case env.params.url["platform"]
-      when "discord"
-        scope = "identify"
-        if env.params.query["scope"]? == "guilds"
-          scope = "guilds"
-          env.session.bool("store_admin_guilds", true)
-        end
-        redirect = discord_auth.client.get_authorize_uri(scope) do |url|
-          url.add("prompt", "none")
-        end
-        env.redirect(redirect)
-      when "twitch"     then env.redirect(twitch_auth.authorize_uri(""))
-      when "streamlabs" then env.redirect(streamlabs_auth.authorize_uri("donations.create"))
-      else                   halt env, status_code: 400
-      end
-    end
-
-    get "/auth/callback/:platform" do |env|
-      case env.params.url["platform"]
-      when "twitch"
-        user = twitch_auth.get_user_id_with_authorization_code(env.params.query)
-        env.session.bigint("twitch", user)
-        user_id = TB::Data::Account.read(:twitch, user).id.to_i64
-      when "discord"
-        if env.session.bool?("store_admin_guilds")
-          access_token = discord_auth.get_access_token(env.params.query, "guilds")
-          guilds = discord_auth.get_user_admin_guilds(access_token)
-        else
-          access_token = discord_auth.get_access_token(env.params.query)
-        end
-
-        user = discord_auth.get_user_id(access_token)
-        env.session.bigint("discord", user)
-
-        user_id = TB::Data::Account.read(:discord, user).id.to_i64
-      when "streamlabs"
-        env.redirect("/login") unless user_id = env.session.bigint("user_id")
-        access_token = streamlabs_auth.get_access_token(env.params.query)
-
-        TB::Data::Account.update_streamlabs_token(user_id, access_token.access_token)
-        env.redirect("/streamlabs")
-      else
-        halt env, status_code: 400
-      end
-
-      env.session.bigint("user_id", user_id)
-      if guilds
-        env.session.object("admin_guilds", GuildsArray.new(guilds))
-      end
-
-      origin = env.session.string?("origin")
-      env.session.string("origin", "/")
-
-      env.redirect(origin || "/")
     end
 
     get "/logout" do |env|
@@ -281,92 +185,6 @@ class Website
     get "/qr/:link" do |env|
       link = env.params.url["link"]
       env.redirect("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chld=L%7C1&chl=#{link}")
-    end
-
-    post "/api/generate_deposit_address" do |env|
-      user = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless user.is_a?(Int64)
-
-      params = env.params.body
-      coin = TB::Data::Coin.read(params["coin"].to_i32)
-
-      address = nil
-      begin
-        address = TB::Data::DepositAddress.read_or_create(coin, TB::Data::Account.read(user))
-      rescue ex
-        if ex.message == "Unable to connect to RPC"
-          halt env, 503, "Please try again later. Unable to connect to RPC"
-        else
-          halt env, 500, "Something went wrong. Please visit #{TB::SUPPORT} for support"
-        end
-      end
-
-      address.to_s
-    end
-
-    post "/api/guild_config" do |env|
-      user = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless user.is_a?(Int64)
-
-      params = env.params.body
-      config_id = params["config_id"].to_i64
-
-      guild = TB::Data::Discord::Guild.read_guild_id(config_id)
-
-      guilds = env.session.object("admin_guilds").guilds
-      halt env, status_code: 403 unless guilds.any? { |x| x.id == guild }
-
-      prefix = params["prefix"]?
-      prefix = nil if prefix == ""
-
-      mention = params["mention"]? ? true : false
-      soak = params["soak"]? ? true : false
-      rain = params["rain"]? ? true : false
-
-      min_soak = parse_bd(params["min_soak"]?)
-      min_soak_total = parse_bd(params["min_soak_total"]?)
-      min_rain = parse_bd(params["min_rain"]?)
-      min_rain_total = parse_bd(params["min_rain_total"]?)
-      min_tip = parse_bd(params["min_tip"]?)
-      min_lucky = parse_bd(params["min_lucky"]?)
-
-      TB::Data::Discord::Guild.update_config(config_id, prefix, mention, soak, rain,
-        min_soak, min_soak_total, min_rain, min_rain_total,
-        min_tip, min_lucky)
-      nil
-    end
-
-    post "/api/donation/test" do |env|
-      user = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless user.is_a?(Int64)
-
-      streamlabs_token = TB::Data::Account.read_streamlabs_token(user)
-      env.redirect("/streamlabs") unless streamlabs_token
-
-      Streamlabs.create_donation(streamlabs_token.not_nil!, user, BigDecimal.new("1"), "USD")
-    end
-
-    post "/api/donation" do |env|
-      donor = env.session.bigint?("user_id")
-      halt env, status_code: 403 unless donor.is_a?(Int64)
-
-      p = env.params.body
-
-      receipient = p["receipient"].to_i64
-      streamlabs_token = TB::Data::Account.read_streamlabs_token(receipient)
-      halt env, status_code: 500 unless streamlabs_token
-
-      name = p["name"]
-      halt env, status_code: 404 unless name.size >= 2 && name.size <= 25 # && /^\w*$/.match(name) == name
-      message = "[ #{p["amount"]} #{p["currency"]} via tipbot.info ]  #{p["message"]}"
-      halt env, status_code: 404 unless message.size < 255
-
-      coin = TB::Data::Coin.read.find { |x| x.name_short == p["currency"] }
-      halt env, status_code: 404 unless coin
-
-      TB::Data::Account.read(donor).transfer(BigDecimal.new(p["amount"]), coin, receipient, TB::Data::TransactionMemo::DONATION)
-
-      Streamlabs.create_donation(streamlabs_token.not_nil!, donor, BigDecimal.new("1"), "USD", name: name, message: message)
     end
 
     Kemal.run
