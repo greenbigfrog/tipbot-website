@@ -141,47 +141,6 @@ class Website
     #   env.redirect("https://github.com/greenbigfrog/discordtipbot/tree/master/docs")
     # end
 
-    # post "/webhook/:coin" do |env|
-    #   headers = env.request.headers
-    #   json = env.params.json
-    #   coin = env.params.url["coin"]
-
-    #   halt env, status_code: 403 unless headers["Authorization"]? == data[coin].dbl_auth
-
-    #   unless json["type"] == "upvote"
-    #     puts "Received test webhook call"
-    #     halt env, status_code: 204
-    #   end
-    #   query = json["query"]?
-    #   params = HTTP::Params.parse(query.lchop('?')) if query.is_a?(String)
-    #   server = params["server"]? if params
-
-    #   user = json["user"]
-    #   halt env, status_code: 503 unless user.is_a?(String)
-    #   user = user.to_u64
-
-    #   if server
-    #     data[coin].extend_premium(Premium::Kind::Guild, server.to_u64, 30.minutes)
-    #     msg = "Thanks for voting. Extended premium of #{server} by 15 **x2** minutes"
-    #   else
-    #     data[coin].extend_premium(Premium::Kind::User, user, 2.hour)
-    #     msg = "Thanks for voting. Extended your own personal global premium by 1 **x2** hours"
-    #   end
-
-    #   if coin == "dogecoin"
-    #     str = "1 DOGE"
-    #     amount = 1
-    #   else
-    #     str = "5 ECA"
-    #     amount = 5
-    #   end
-    #   data[coin].db.exec(SQL, user, amount)
-
-    #   msg = "#{msg}\nAs a christmas present you've received twice as much premium time as well as #{str} courtesy of <@163607982473609216>"
-
-    #   queue.push(Msg.new(coin, user, msg))
-    # end
-
     get "/qr/:link" do |env|
       link = env.params.url["link"]
       env.redirect("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chld=L%7C1&chl=#{link}")
