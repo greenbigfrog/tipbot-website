@@ -54,6 +54,7 @@ class Website
 
     discord_auth = DiscordOAuth2.new(ENV["DISCORD_CLIENT_ID"], ENV["DISCORD_CLIENT_SECRET"], redirect_uri + "discord")
     twitch_auth = TwitchOAuth2.new(ENV["TWITCH_CLIENT_ID"], ENV["TWITCH_CLIENT_SECRET"], redirect_uri + "twitch")
+    streamlabs_auth = StreamlabsOAuth2.new(ENV["SL_CLIENT_ID"], ENV["SL_CLIENT_SECRET"], redirect_uri + "streamlabs")
 
     get "/" do |env|
       default_render("index.ecr")
@@ -134,6 +135,29 @@ class Website
     #   # HTML
     # end
 
+    get "/streamlabs" do |env|
+      user = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless user.is_a?(Int64)
+      streamlabs_token = TB::Data::Account.read_streamlabs_token(user)
+
+      default_render("streamlabs.ecr")
+    end
+
+    get "/donate/:id" do |env|
+      user = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless user.is_a?(Int64)
+
+      receipient = env.params.url["id"].to_i64
+      streamlabs_token = TB::Data::Account.read_streamlabs_token(receipient)
+      env.redirect "/donate/no_streamlabs_token" unless streamlabs_token
+
+      default_render("donate/donate.ecr")
+    end
+
+    get "/donate/no_streamlabs_token" do |env|
+      default_render("donate/no_streamlabs_token.ecr")
+    end
+
     get "/login" do |env|
       default_render("login.ecr")
     end
@@ -151,7 +175,9 @@ class Website
         end
         env.redirect(redirect)
       when "twitch" then env.redirect(twitch_auth.authorize_uri(""))
-      else               halt env, status_code: 400
+      when "streamlabs" then env.redirect(streamlabs_auth.authorize_uri("donations.create
+"))
+      else halt env, status_code: 400
       end
     end
 
@@ -173,6 +199,12 @@ class Website
         env.session.bigint("discord", user)
 
         user_id = TB::Data::Account.read(:discord, user).id.to_i64
+      when "streamlabs"
+        env.redirect("/login") unless user_id = env.session.bigint("user_id")
+        access_token = streamlabs_auth.get_access_token(env.params.query)
+
+        TB::Data::Account.update_streamlabs_token(user_id, access_token.access_token)
+        env.redirect("/streamlabs")
       else
         halt env, status_code: 400
       end
@@ -303,6 +335,39 @@ class Website
         min_soak, min_soak_total, min_rain, min_rain_total,
         min_tip, min_lucky)
       nil
+    end
+
+    post "/api/donation/test" do |env|
+      user = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless user.is_a?(Int64)
+
+      streamlabs_token = TB::Data::Account.read_streamlabs_token(user)
+      env.redirect("/streamlabs") unless streamlabs_token
+
+      Streamlabs.create_donation(streamlabs_token.not_nil!, user, BigDecimal.new("1"), "USD")
+    end
+
+    post "/api/donation" do |env|
+      donor = env.session.bigint?("user_id")
+      halt env, status_code: 403 unless donor.is_a?(Int64)
+
+      p = env.params.body
+
+      receipient = p["receipient"].to_i64
+      streamlabs_token = TB::Data::Account.read_streamlabs_token(receipient)
+      halt env, status_code: 500 unless streamlabs_token
+
+      name = p["name"]
+      halt env, status_code: 404 unless name.size >= 2 && name.size <= 25 # && /^\w*$/.match(name) == name
+      message = "[ #{p["amount"]} #{p["currency"]} via tipbot.info ]  #{p["message"]}"
+      halt env, status_code: 404 unless message.size < 255
+
+      coin = TB::Data::Coin.read.find { |x| x.name_short == p["currency"] }
+      halt env, status_code: 404 unless coin
+
+      TB::Data::Account.read(donor).transfer(BigDecimal.new(p["amount"]), coin, receipient, TB::Data::TransactionMemo::DONATION)
+
+      Streamlabs.create_donation(streamlabs_token.not_nil!, donor, BigDecimal.new("1"), "USD", name: name, message: message)
     end
 
     Kemal.run

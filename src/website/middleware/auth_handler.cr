@@ -1,6 +1,6 @@
 class AuthHandler < Kemal::Handler
   # exclude ["/", "/login", "/auth/*"] #  "/auth/callback/:platform"]
-  only ["/statistics", "/balance", "/link_accounts", "/deposit", "/api/*", "/configuration/*"]
+  only ["/statistics", "/balance", "/link_accounts", "/deposit", "/api/*", "/configuration/*", "/streamlabs"]
 
   def call(env)
     # return call_next(env) if exclude_match?(env)

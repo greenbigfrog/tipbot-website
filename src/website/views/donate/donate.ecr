@@ -1,0 +1,42 @@
+<script type="text/javascript">
+function formSubmit(event) {
+  var url = "/api/donation";
+  var request = new XMLHttpRequest();
+  request.open('POST', url, true);
+  request.onload = function() {
+	document.getElementById("status").style.setProperty("display","inline");
+  };
+
+  request.onerror = function() {
+	document.getElementById("status").style.setProperty("display","inline");
+	document.getElementById("status").innerHTML = "ERROR! Something went wrong. Please try again later"
+  };
+
+  request.send(new FormData(event.target));
+  event.preventDefault();
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById("donation").addEventListener("submit", formSubmit);
+})
+</script>
+<title>Donate</title>
+
+<form id="donation">
+	<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
+	<input type="hidden" name="receipient" value="<%= receipient %>">
+
+	<label for="name">Name</label>
+	<input name="name" type="text" min=2 placeholder="Input your name">
+	<label for="message">Message</label>
+	<input type="text" name="message" placeholder="Input a message to display in the alert">
+	<label for="amount">Amount</label>
+	<input type="number" name="amount">
+	<select name="currency">
+		<%= TB::Data::Coin.read.map {|coin| "<option value=\"#{coin.name_short}\">#{coin.name_short}</option>"}.join %>
+	</select>
+
+	<button type="submit">Send Donation</button>
+	<div id="status">Sent Donation</div>
+</form>
+

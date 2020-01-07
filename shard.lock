@@ -2,7 +2,7 @@ version: 1.0
 shards:
   ameba:
     github: veelenga/ameba
-    version: 0.10.1
+    version: 0.11.0
 
   any_hash:
     github: sija/any_hash.cr
@@ -30,7 +30,7 @@ shards:
 
   kemal:
     github: kemalcr/kemal
-    commit: a4bdecdc7d17a3fa705db4e1c3360590f836cb5d
+    commit: 4d6fb0614f29aa02254913dc6ed69b0cb148fa81
 
   kemal-csrf:
     github: kemalcr/kemal-csrf
@@ -66,7 +66,7 @@ shards:
 
   raven:
     github: sija/raven.cr
-    version: 1.5.1
+    version: 1.5.5
 
   redis:
     github: stefanwille/crystal-redis
@@ -74,7 +74,7 @@ shards:
 
   tb:
     github: greenbigfrog/tipbot-common
-    commit: bbd775485c9914d6a20e0d28d5e95fd35c9f55a2
+    commit: 152db13aee55d77a76090ad9e590edc9603375bd
 
   tb-worker:
     github: greenbigfrog/tipbot-worker

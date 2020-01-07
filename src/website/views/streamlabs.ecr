@@ -1,0 +1,36 @@
+<script type="text/javascript">
+function formSubmit(event) {
+  var url = "/api/donation/test";
+  var request = new XMLHttpRequest();
+  request.open('POST', url, true);
+  request.onload = function() {
+  	console.log("Sent Test Donation Alert")
+	document.getElementById("status").style.setProperty("display","inline");
+  };
+
+  request.onerror = function() {
+    console.log("Error sending Test Donation Alert")
+	document.getElementById("status").style.setProperty("display","inline");
+	document.getElementById("status").innerHTML = "ERROR! Something went wrong. Please try again later"
+  };
+
+  request.send(new FormData(event.target));
+  event.preventDefault();
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById("test-donation").addEventListener("submit", formSubmit);
+})
+</script>
+
+<title>Setup Streamlabs</title>
+Authenticated? <%= streamlabs_token ? "✅" : "No" %>
+<a href="/auth/streamlabs">Authenticate</a>
+<form id="test-donation">
+	<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
+	<button type="submit">Send Test Donation Alert</button>
+	<div id="status">Sent Test Donation Alert</div>
+</form>
+
+<% url = "/donate/#{user}" %>
+<text>Your personal donation page: <a href=<%= url %>><%= url %></a></text>
