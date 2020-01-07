@@ -174,10 +174,9 @@ class Website
           url.add("prompt", "none")
         end
         env.redirect(redirect)
-      when "twitch" then env.redirect(twitch_auth.authorize_uri(""))
-      when "streamlabs" then env.redirect(streamlabs_auth.authorize_uri("donations.create
-"))
-      else halt env, status_code: 400
+      when "twitch"     then env.redirect(twitch_auth.authorize_uri(""))
+      when "streamlabs" then env.redirect(streamlabs_auth.authorize_uri("donations.create"))
+      else                   halt env, status_code: 400
       end
     end
 
