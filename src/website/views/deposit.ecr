@@ -14,6 +14,9 @@
 .deposit-addresses {
 	display: flex;
 	justify-content: space-around;
+	flex-direction: column;
+	align-items: center;
+	min-height: 60%;
 }
 
 .deposit {
@@ -41,6 +44,16 @@
 
 .info button:hover + text {
 	display: inline;
+}
+
+.alert {
+	border-style: solid;
+	border-radius: 5px;
+	border-color: #FF4A4A;
+	background-color: #DCDCDC;
+	color: black;
+	padding: 5px;
+	margin: 10px;
 }
 </style>
 <script type="text/javascript">
@@ -82,6 +95,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 	<% coins = TB::Data::Coin.read_all %>
 	<% deposit_addresses = TB::Data::DepositAddress.read_all_active_for_account(user.to_i32) %>
 	<div class="deposit-addresses">
+	<div class="alert">
+		<text>All deposit addresses are onetime use only! Don't use any of these addresses to receive from faucets, pools, etc.</text>
+	</div>
 	<% coins.each do |coin| %>
 		<% coin = coin[1] %>
 		<div class="deposit">
