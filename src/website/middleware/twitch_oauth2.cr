@@ -14,8 +14,8 @@ class TwitchOAuth2
     @client.get_authorize_uri(scope)
   end
 
-  def get_access_token(params)
-    @client.get_access_token_using_authorization_code(params["code"])
+  def get_access_token(code)
+    @client.get_access_token_using_authorization_code(code)
   end
 
   def get_user_id(access_token)
@@ -29,7 +29,7 @@ class TwitchOAuth2
     list.data.first.id.to_i64
   end
 
-  def get_user_id_with_authorization_code(params)
-    get_user_id(get_access_token(params).access_token)
+  def get_user_id_with_authorization_code(code)
+    get_user_id(get_access_token(code).access_token)
   end
 end

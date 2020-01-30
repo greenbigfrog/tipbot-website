@@ -20,7 +20,9 @@ class Website
   get "/auth/callback/:platform" do |env|
     case env.params.url["platform"]
     when "twitch"
-      user = twitch_auth.get_user_id_with_authorization_code(env.params.query)
+      code = env.params.query["code"]?
+      halt env, status_code: 500 unless code
+      user = twitch_auth.get_user_id_with_authorization_code(code)
       env.session.bigint("twitch", user)
       user_id = TB::Data::Account.read(:twitch, user).id.to_i64
     when "discord"
