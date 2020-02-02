@@ -33,7 +33,7 @@
 	display: none;
 }
 
-.info text {
+.info p {
 	display: none;
 
 	background-color: #ffe4fd;
@@ -42,7 +42,7 @@
 	border-radius: 2px;
 }
 
-.info button:hover + text {
+.info button:hover + p {
 	display: inline;
 }
 
@@ -56,7 +56,7 @@
 	margin: 10px;
 }
 </style>
-<script type="text/javascript">
+<script>
 function generateDeposit(event) {
   var coin = event.target["coin"].value
   var url = "/api/generate_deposit_address";
@@ -72,7 +72,8 @@ function generateDeposit(event) {
 
   request.onreadystatechange = function() {
 	if (request.readyState == XMLHttpRequest.DONE) {
-		document.getElementById("deposit-address-" + coin).innerHTML = request.responseText;
+		document.getElementById("deposit-address-" + coin).textContent = request.response;
+		document.getElementById("deposit-address-" + coin).classList.remove("hidden");
 		document.getElementById("info-" + coin).classList.remove("hidden");
 		document.getElementById("generate-deposit-" + coin).classList.add("hidden");
 	}
@@ -95,25 +96,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
 	<% coins = TB::Data::Coin.read_all %>
 	<% deposit_addresses = TB::Data::DepositAddress.read_all_active_for_account(user.to_i32) %>
 	<div class="deposit-addresses">
-	<div class="alert">
-		<text>All deposit addresses are onetime use only! Don't use any of these addresses to receive from faucets, pools, etc.</text>
-	</div>
-	<% coins.each do |coin| %>
+		<div class="alert">
+			<p>All deposit addresses are onetime use only! Don't use any of these addresses to receive from faucets, pools, etc.</p>
+		</div>
+		<% coins.each do |coin| %>
 		<% coin = coin[1] %>
 		<div class="deposit">
 			<% address = deposit_addresses[coin.id]? %>
 			<h2><%= coin.name_long %>:</h2>
-			<text class="deposit-address" <%= "style=\"display:none;\"" unless address %> id="deposit-address-<%= coin.id %>"><%= address ? address.address : "NULL" %></text>
+			<p class="deposit-address <%= "hidden" unless address %>" id="deposit-address-<%= coin.id %>"><%= address ? address.address : "NULL" %></p>
 			<div class="info <%= address ? nil : "hidden" %>" id="info-<%= coin.id %>">
 				<button><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24"viewBox="0 0 24 24"><path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path></svg></button>
-				<text>Generated at <%= address ? address.created_time : nil %></text>
+				<p>Generated at <%= address ? address.created_time : nil %></p>
 			</div>
-			<form class="generate-deposit <%= address ? "hidden" : nil %>" id="generate-deposit-<%= coin.id %>">
+			<form class="generate-deposit <%= "hidden" if address %>" id="generate-deposit-<%= coin.id %>">
 				<input type="hidden" name="coin" value="<%= coin.id %>">
 				<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
 				<button type="submit">Generate Deposit Address</button>
 			</form>
 		</div>
-	<% end %>
+		<% end %>
 	</div>
 </body>
