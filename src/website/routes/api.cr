@@ -52,16 +52,6 @@ class Website
     nil
   end
 
-  post "/api/donation/test" do |env|
-    user = env.session.bigint?("user_id")
-    halt env, status_code: 403 unless user.is_a?(Int64)
-
-    streamlabs_token = TB::Data::Account.read_streamlabs_token(user)
-    env.redirect("/streamlabs") unless streamlabs_token
-
-    Streamlabs.create_donation(streamlabs_token.not_nil!, user, BigDecimal.new("1"), "USD")
-  end
-
   post "/api/donation" do |env|
     donor = env.session.bigint?("user_id")
     halt env, status_code: 403 unless donor.is_a?(Int64)
