@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 })
 </script>
 <body>
-	<title>Deposit</title>
+	<title>Cryptobutler - Deposit</title>
 	<% coins = TB::Data::Coin.read_all %>
 	<% deposit_addresses = TB::Data::DepositAddress.read_all_active_for_account(user.to_i32) %>
 	<div class="deposit-addresses">
