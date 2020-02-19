@@ -2,11 +2,10 @@ class Website
   get "/auth/:platform" do |env|
     case env.params.url["platform"]
     when "discord"
-      scope = "identify"
-      if env.params.query["scope"]? == "guilds"
-        scope = "guilds"
+      if scope = env.params.query["scope"]?
         env.session.bool("store_admin_guilds", true)
       end
+      scope = "identify" unless scope
       redirect = discord_auth.client.get_authorize_uri(scope) do |url|
         url.add("prompt", "none")
       end

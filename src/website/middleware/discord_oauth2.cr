@@ -61,6 +61,7 @@ class DiscordOAuth2
     access_token.authenticate(client)
 
     raw_json = client.get("/api/v6/users/@me/guilds").body
+    pp raw_json
     Array(DiscordGuild).from_json(raw_json)
   end
 
@@ -82,6 +83,7 @@ class DiscordOAuth2
     access_token.authenticate(client)
 
     raw_json = client.get("/api/v6/users/@me").body
+    pp raw_json
     DiscordUser.from_json(raw_json).id
   end
 end

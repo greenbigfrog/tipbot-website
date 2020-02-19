@@ -121,7 +121,7 @@ class Website
 
     get "/login" do |env|
       origin = env.session.string?("origin")
-      discord_destination = /\/configuration/.match(origin || "") ? "/auth/discord?scope=guilds" : "/auth/discord"
+      discord_destination = /\/configuration/.match(origin || "") ? "/auth/discord?scope=identify+guilds" : "/auth/discord"
       default_render("login.ecr")
     end
 
