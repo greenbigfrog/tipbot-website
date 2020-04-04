@@ -72,24 +72,32 @@
 	margin-right: 50px;
 }
 
-#status {
+.status {
 	display: none;
 }
 </style>
 <script type="text/javascript">
 function formSubmit(event) {
+  var coin = event.target["coin"].value
   var url = "/api/guild_config";
   var request = new XMLHttpRequest();
   request.open('POST', url, true);
+  document.getElementById("status-" + coin).style.setProperty("display","inline");
+  document.getElementById("status-" + coin).innerHTML = "Loading"
   request.onload = function() {
-  	console.log("Stored Config")
-	document.getElementById("status").style.setProperty("display","inline");
+    switch(request.status) {
+      case 200:
+        console.log("Stored Config")
+        document.getElementById("status-" + coin).innerHTML = "SAVED"
+        break;
+      default:
+        document.getElementById("status-" + coin).innerHTML = "ERROR! Please try again later"
+    };
   };
 
   request.onerror = function() {
-    console.log("Error storing config")
-	document.getElementById("status").style.setProperty("display","inline");
-	document.getElementById("status").innerHTML = "ERROR! Something went wrong. Please try again later"
+    console.log("Error with http request")
+	document.getElementById("status-" + coin).innerHTML = "ERROR! Something went wrong. Please try again later"
   };
 
   request.send(new FormData(event.target));
@@ -97,7 +105,9 @@ function formSubmit(event) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-  document.getElementById("config-form").addEventListener("submit", formSubmit);
+  document.querySelectorAll(".config-form").forEach (function(element) {
+  	element.addEventListener("submit", formSubmit);
+  });
 })
 </script>
 <body>
@@ -129,7 +139,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 			<% coin = coins[conf.coin] %>
 			<div class="guild-config">
 				<h1>Coin: <%= coin.name_long %></h1>
-				<form id="config-form">
+				<form class="config-form">
 					<div class="option">
 						<label for="prefix">Prefix</label>
 						<input name="prefix" type="text" placeholder="<%= conf.prefix || coin.prefix %>">
@@ -174,10 +184,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
 					</div>
 
 					<div class="option">
+						<input type="hidden" name="coin" value="<%= conf.coin %>">
 						<input type="hidden" name="config_id" value="<%= conf.id %>">
 						<input type="hidden" name="authenticity_token" value="<%= env.session.string("csrf") %>">
 						<button type="submit">Save</button>
-						<div id="status">SAVED</div>
+						<div class="status" id="status-<%= conf.coin %>">SAVED</div>
 					</div>
 				</form>
 			</div>
