@@ -130,7 +130,7 @@ class Website
       env.redirect("/")
     end
 
-    # walletnotify=curl --retry 10 -X POST http://website:3000/walletnotify?coin=0&tx=%s
+    # walletnotify=curl --retry 10 http://website:3000/walletnotify?coin=0&tx=%s
     get "/walletnotify" do |env|
       coin = TB::Data::Coin.read(env.params.query["coin"].to_i32)
       tx = env.params.query["tx"]

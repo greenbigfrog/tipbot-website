@@ -2,35 +2,35 @@ version: 1.0
 shards:
   ameba:
     github: veelenga/ameba
-    version: 0.11.0
+    version: 0.12.1
 
   any_hash:
-    github: sija/any_hash.cr
-    commit: 1907068cdbfc3ef9759954194472b82f9f19c6e4
+    github: Sija/any_hash.cr
+    version: 0.2.3
 
   bitcoin_rpc:
     github: citizen428/bitcoin_rpc
     version: 5.0.0
 
   crometheus:
-    gitlab: bigforcegun/crometheus
-    commit: 42bec4e2d2ab92d2b3d2dc21ec443aaa9feb7555
+    github: Darwinnn/crometheus
+    commit: f51ab57a79b8702c58d0b6e1edea04b8d95f55da
 
   db:
     github: crystal-lang/crystal-db
-    version: 0.7.0
+    version: 0.9.0
 
   discordcr:
     github: greenbigfrog/discordcr
-    commit: ce3a13c28e76976965d9bbaae88a02131da2b55f
+    commit: be3e9723e813c78fb702fb3c63b76ebe223a7991
 
   exception_page:
     github: crystal-loot/exception_page
-    version: 0.1.2
+    version: 0.1.4
 
   kemal:
     github: kemalcr/kemal
-    commit: 4d6fb0614f29aa02254913dc6ed69b0cb148fa81
+    commit: a8c0f09b858162bd13c96663febef5527b322a32
 
   kemal-csrf:
     github: kemalcr/kemal-csrf
@@ -50,11 +50,11 @@ shards:
 
   mosquito:
     github: robacarp/mosquito
-    version: 0.5.0
+    version: 0.8.0
 
   pg:
     github: greenbigfrog/crystal-pg
-    commit: 764797e80675906c05ca7a0b02c2839f6dbb4522
+    commit: eac915b064d5e895d842bc81e1c2f73e3461cba6
 
   pool:
     github: ysbaddaden/pool
@@ -66,21 +66,21 @@ shards:
 
   raven:
     github: sija/raven.cr
-    version: 1.5.5
+    commit: 000bbc306e7ddd348da8df4c2f96578bf03f07de
 
   redis:
     github: stefanwille/crystal-redis
-    version: 2.1.1
+    version: 2.6.0
 
   tb:
     github: greenbigfrog/tipbot-common
-    commit: a24a9438c677551e7ae2fa1774c816b983448f86
+    commit: af0ff8289e1195492e37acc1b9b9b81d221d03f8
 
   tb-worker:
     github: greenbigfrog/tipbot-worker
-    commit: 4103d162b7da0bb3caaf56e3c0e8aa445bce2723
+    commit: 54c583e112083dc4027bc3eda32b1e74a1e6b01d
 
   twitcr:
     github: greenbigfrog/twitcr
-    commit: e611e739d7177fbe5ee404e8b77e00bb584721cc
+    commit: 4f935e65c79a7b3bd55138cd49902b55c420f446
 
