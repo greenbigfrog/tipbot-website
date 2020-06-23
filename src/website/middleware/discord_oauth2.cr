@@ -37,10 +37,11 @@ end
 class DiscordOAuth2
   def initialize(client_id : String, client_secret : String,
                  redirect_uri : String)
-    @client = OAuth2::Client.new("discordapp.com/api/v6",
+    @client = OAuth2::Client.new("discordapp.com",
       client_id,
       client_secret,
-      authorize_uri: "/oauth2/authorize",
+      authorize_uri: "/api/v6/oauth2/authorize",
+      token_uri: "/api/v6/oauth2/token",
       redirect_uri: redirect_uri)
   end
 
